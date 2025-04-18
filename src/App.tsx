@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { Basket } from "./components/Basket";
+import { Checkout } from "./components/Checkout";
+import { GroceryList } from "./components/GroceryList";
+import { OrderConfirmation } from "./components/OrderConfirmation";
+import { Product, Order } from "./models/types";
 
-function App() {
+const App: React.FC = () => {
+  const [basket, setBasket] = useState<Product[]>([]);
+  const [checkout, setCheckout] = useState(false);
+  const [order, setOrder] = useState<Order | null>(null);
+
+  const addToBasket = (product: Product) => {
+    setBasket([...basket, product]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="p-6">
+      {!checkout && !order && (
+        <>
+          <GroceryList addToBasket={addToBasket} />
+          <Basket basket={basket} onCheckout={() => setCheckout(true)} />
+        </>
+      )}
+      {checkout && !order && (
+        <Checkout
+          basket={basket}
+          onConfirmOrder={(newOrder) => setOrder(newOrder)}
+        />
+      )}
+      {order && <OrderConfirmation order={order} />}
     </div>
   );
-}
-
+};
 export default App;
